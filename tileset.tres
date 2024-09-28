@@ -1,0 +1,23 @@
+[gd_resource type="TileSet" load_steps=4 format=3 uid="uid://dvderq08rnag2"]
+
+[ext_resource type="Texture2D" uid="uid://jteu46k2x1x3" path="res://tileset.png" id="1_21mcp"]
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_30vji"]
+tile_data = PackedInt32Array(0, 65536, 0, 65536, 131072, 0, 1, 131072, 0, 65537, 65536, 0)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ebkwf"]
+texture = ExtResource("1_21mcp")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[resource]
+custom_data_layer_0/name = "Object"
+custom_data_layer_0/type = 0
+sources/0 = SubResource("TileSetAtlasSource_ebkwf")
+pattern_0 = SubResource("TileMapPattern_30vji")
