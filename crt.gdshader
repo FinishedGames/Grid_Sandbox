@@ -25,4 +25,3 @@ void fragment() {
     // Set the output color
     COLOR = average_color;
 }
-

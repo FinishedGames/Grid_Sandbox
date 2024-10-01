@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://c3icmne2pfxqb"]
+[gd_scene load_steps=13 format=4 uid="uid://c3icmne2pfxqb"]
 
 [ext_resource type="Script" path="res://scripts/Grid_manager.gd" id="1_6odlq"]
 [ext_resource type="Script" path="res://scripts/Input_manager.gd" id="1_da18s"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://d4nbo13x2rnnp" path="res://char.png" id="5_uj7hh"]
 [ext_resource type="Shader" path="res://crt.gdshader" id="6_0dik2"]
 [ext_resource type="Script" path="res://scripts/Player_ctrl.gd" id="7_axkjx"]
+[ext_resource type="Texture2D" uid="uid://bjunk6qqvufvb" path="res://mob.png" id="7_umksh"]
 [ext_resource type="Script" path="res://scripts/Mob.gd" id="8_ldem6"]
 [ext_resource type="Texture2D" uid="uid://d3oyk4exdb0hm" path="res://cursor.png" id="9_camyy"]
 [ext_resource type="Texture2D" uid="uid://g84oqx5fr1dy" path="res://crosshair.png" id="9_uycw2"]
@@ -34,6 +35,14 @@ texture_filter = 1
 tile_map_data = PackedByteArray("AAAOAAgAAAAAAAAAAAAJAAgAAAAAAAAAAAAKAAgAAAAAAAAAAAAKAAcAAAAAAAAAAAAOAAcAAAAAAAAAAAAPAAgAAAAAAAAAAAAIAAgAAAAAAAAAAAAIAAkAAAAAAAAAAAAIAAsAAAAAAAAAAAAIAAwAAAAAAAAAAAAJAAwAAAAAAAAAAAAKAAwAAAAAAAAAAAAKAA0AAAAAAAAAAAAOAA0AAAAAAAAAAAAOAAwAAAAAAAAAAAAPAAwAAAAAAAAAAAAQAAwAAAAAAAAAAAAQAAgAAAAAAAAAAAALAA0AAAABAAAAAAAMAA0AAAABAAAAAAANAA0AAAABAAAAAAAMAAcAAAABAAAAAAANAAcAAAABAAAAAAALAAcAAAABAAAAAAAQAAkAAAAAAAAAAAAQAAsAAAAAAAAAAAAVAAwAAAAHAAAAAAAVAA0AAAAHAAAAAAAWAA0AAAAHAAAAAAAWAAwAAAAHAAAAAAAXAA0AAAAHAAAAAAAXAAwAAAAHAAAAAAAWAA4AAAAHAAAAAAAXAA4AAAAHAAAAAAAYAAwAAAAHAAAAAAAYAAsAAAAHAAAAAAAXAAsAAAAHAAAAAAAZAAwAAAAHAAAAAAAZAAsAAAAHAAAAAAAYAA0AAAAHAAAAAAAYAAoAAAAHAAAAAAA=")
 tile_set = ExtResource("2_e52n8")
 
+[node name="Player_ctl" type="Node" parent="." node_paths=PackedStringArray("grid_agent", "input_mgr", "cursor", "crosshair", "mob")]
+script = ExtResource("7_axkjx")
+grid_agent = NodePath("../Player")
+input_mgr = NodePath("../Input_manager")
+cursor = NodePath("../Cursor")
+crosshair = NodePath("../Crosshair")
+mob = NodePath("../Mob/Mob_ctl")
+
 [node name="Player" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
 texture_filter = 1
 position = Vector2(191, 202)
@@ -45,33 +54,17 @@ speed = 50.0
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(3, 3)
 
-[node name="Mob2" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
-texture_filter = 1
-position = Vector2(162, 153)
-texture = ExtResource("5_uj7hh")
-script = ExtResource("5_hp4cm")
-grid = NodePath("../Grid")
-speed = 20.0
-
-[node name="Mob_ctl" type="Node" parent="Mob2" node_paths=PackedStringArray("grid_agent", "input_mgr")]
-script = ExtResource("8_ldem6")
-grid_agent = NodePath("..")
-input_mgr = NodePath("../../Input_manager")
-period = 0.5
-
 [node name="Mob" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
 texture_filter = 1
 position = Vector2(139, 102)
-texture = ExtResource("5_uj7hh")
+texture = ExtResource("7_umksh")
 script = ExtResource("5_hp4cm")
 grid = NodePath("../Grid")
-speed = 20.0
+speed = 50.0
 
-[node name="Mob_ctl" type="Node" parent="Mob" node_paths=PackedStringArray("grid_agent", "input_mgr")]
+[node name="Mob_ctl" type="Node" parent="Mob" node_paths=PackedStringArray("grid_agent")]
 script = ExtResource("8_ldem6")
 grid_agent = NodePath("..")
-input_mgr = NodePath("../../Input_manager")
-period = 0.5
 
 [node name="TextureRect" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_rt7p0")
@@ -81,17 +74,10 @@ offset_right = -147.0
 offset_bottom = 15.0
 scale = Vector2(12.3478, 6.84695)
 
-[node name="Player_ctl" type="Node" parent="." node_paths=PackedStringArray("grid_agent", "input_mgr", "cursor", "crosshair")]
-script = ExtResource("7_axkjx")
-grid_agent = NodePath("../Player")
-input_mgr = NodePath("../Input_manager")
-cursor = NodePath("../Cursor")
-crosshair = NodePath("../Crosshair")
+[node name="Cursor" type="Sprite2D" parent="."]
+position = Vector2(118, 151)
+texture = ExtResource("9_camyy")
 
 [node name="Crosshair" type="Sprite2D" parent="."]
 position = Vector2(118, 151)
 texture = ExtResource("9_uycw2")
-
-[node name="Cursor" type="Sprite2D" parent="."]
-position = Vector2(118, 151)
-texture = ExtResource("9_camyy")

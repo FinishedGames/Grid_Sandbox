@@ -1,9 +1,9 @@
-extends Node
 class_name Tile_nav
 
 var misc = preload("res://scripts/Misc_functions.gd").new()
 
-@export var grid : TileMapLayer
+var grid : Grid_manager
+var allow_diagonal_steps = true
 var map = null 
 
 const UNTRAVERSED = -1.0
@@ -22,20 +22,22 @@ func scan_routes(from : Vector2i, ignore_objects = false) -> void:
 		
 		if current.x != 0:
 			neighbors.append(Vector2i(-1, 0)) # Left
-			if current.y != grid.height - 1:
-				neighbors.append(Vector2i(-1, 1)) # Top left
-			if current.y != 0:
-				neighbors.append(Vector2i(-1, -1)) # Bottom left
+			if allow_diagonal_steps:
+				if current.y != grid.height - 1:
+					neighbors.append(Vector2i(-1, 1)) # Top left
+				if current.y != 0:
+					neighbors.append(Vector2i(-1, -1)) # Bottom left
 				
 		if current.y != 0:
 			neighbors.append(Vector2i(0, -1)) # Bottom
 			
 		if current.x != grid.width - 1:
 			neighbors.append(Vector2i(1, 0))
-			if current.y != grid.height - 1:
-				neighbors.append(Vector2i(1, 1)) # Top right
-			if current.y != 0:
-				neighbors.append(Vector2i(1, -1)) # Bottom right
+			if allow_diagonal_steps:
+				if current.y != grid.height - 1:
+					neighbors.append(Vector2i(1, 1)) # Top right
+				if current.y != 0:
+					neighbors.append(Vector2i(1, -1)) # Bottom right
 			
 		if current.y != grid.height - 1:
 			neighbors.append(Vector2i(0, 1)) # Top
@@ -54,7 +56,7 @@ func scan_routes(from : Vector2i, ignore_objects = false) -> void:
 	
 func get_route(to: Vector2i):
 	if map == null or map[to.y][to.x] < 0:
-		return null
+		return []
 		
 	var current = to
 	var cur_distance = map[current.y][current.x]
@@ -68,20 +70,22 @@ func get_route(to: Vector2i):
 	
 		if current.x != 0:
 			neighbors.append(Vector2i(-1, 0)) # Left
-			if current.y != grid.height - 1:
-				neighbors.append(Vector2i(-1, 1)) # Top left
-			if current.y != 0:
-				neighbors.append(Vector2i(-1, -1)) # Bottom left
+			if allow_diagonal_steps:
+				if current.y != grid.height - 1:
+					neighbors.append(Vector2i(-1, 1)) # Top left
+				if current.y != 0:
+					neighbors.append(Vector2i(-1, -1)) # Bottom left
 				
 		if current.y != 0:
 			neighbors.append(Vector2i(0, -1)) # Bottom
 			
 		if current.x != grid.width - 1:
 			neighbors.append(Vector2i(1, 0))
-			if current.y != grid.height - 1:
-				neighbors.append(Vector2i(1, 1)) # Top right
-			if current.y != 0:
-				neighbors.append(Vector2i(1, -1)) # Bottom right
+			if allow_diagonal_steps:
+				if current.y != grid.height - 1:
+					neighbors.append(Vector2i(1, 1)) # Top right
+				if current.y != 0:
+					neighbors.append(Vector2i(1, -1)) # Bottom right
 			
 		if current.y != grid.height - 1:
 			neighbors.append(Vector2i(0, 1)) # Top
@@ -92,7 +96,7 @@ func get_route(to: Vector2i):
 			if dist >= 0:
 				distances.append(map[(current + neighbor).y][(current + neighbor).x])
 		if distances.size() == 0:
-			return null # no route found
+			return [] # no route found
 			
 		var minimum = distances.min()
 		
@@ -104,7 +108,6 @@ func get_route(to: Vector2i):
 		var next_tile = valid_neighbors.pick_random()	
 		current = next_tile
 	
-	route.reverse()
-	route.pop_front()
+	route.pop_back()
 	return route
 	

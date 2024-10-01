@@ -14,23 +14,30 @@ var _moving_from = null # the tile from which movement was started, used to inte
 var _is_moving = false
 var _halfway_done = false
 var _move_end_callback = null
+var _step_success = true
 
 @export var can_pass_objects = false
 @export var can_pass_solids = false
 
 var tile_occupier = "moved to" # placeholder to pre-occupy tiles to which the agent moves
 
-func _ready() -> void:
-	# attach self to nearest tile
-	var grid_pos = grid.get_pos(position)
-	position = grid.snap_to(grid_pos)
-	grid.objects[grid_pos.y][grid_pos.x] = self
-	
 func step(delta: Vector2i, callback = null):
 	if moving_to == null:
 		_move_end_callback = callback
 		_moving_from = grid.get_pos(position)
 		moving_to = _moving_from + delta
+		
+func step_to(pos: Vector2i, callback = null):
+	step(pos - get_grid_pos(), callback)
+		
+func get_grid_pos() -> Vector2i:
+	return grid.get_pos(position)
+
+func _ready() -> void:
+	# attach self to nearest tile
+	var grid_pos = get_grid_pos()
+	position = grid.snap_to(grid_pos)
+	grid.objects[grid_pos.y][grid_pos.x] = self
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -43,6 +50,7 @@ func _process(delta: float) -> void:
 		   (not next_is_solid or can_pass_solids):
 			_begin_step() # next step vacant, begin movement
 		else:
+			_step_success = false
 			_end_step() # occupied, can't move
 			
 	if _is_moving:
@@ -58,13 +66,14 @@ func _process(delta: float) -> void:
 							progress_norm ** 2 * 2 if progress_norm < 0.5 else 1 - 2*(1 - progress_norm) ** 2)
 			_move_progress += delta
 		else: # finishing step
-			position = grid.snap_to(grid.get_pos(position)) # snap position to grid
+			position = grid.snap_to(get_grid_pos()) # snap position to grid
+			_step_success = true
 			_end_step()
 	
 func _begin_step():
 	# pre-occupy tile with placeholder
 	grid.objects[moving_to.y][moving_to.x] = tile_occupier
-	_moving_from = grid.get_pos(position)
+	_moving_from = get_grid_pos()
 	_move_duration = (grid.snap_to(_moving_from) - 
 					  grid.snap_to(moving_to)).length() / speed
 	_is_moving = true
@@ -74,10 +83,15 @@ func _step_halfway():
 	grid.objects[moving_to.y][moving_to.x] = self # move self to next tile 
 		
 func _end_step():
-	if _move_end_callback:
-		_move_end_callback.call()
+	var prev_callback = _move_end_callback
+	
 	_move_progress = 0.0
 	moving_to = null
 	_moving_from = null
 	_is_moving = false
 	_move_end_callback = null
+	
+	if prev_callback:
+		prev_callback.call(_step_success)
+		
+	

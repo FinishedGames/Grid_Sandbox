@@ -1,26 +1,23 @@
 extends Node
 
 @export var grid_agent : Grid_actor
-@export var input_mgr : Input_manager
 
-@export var period = 1.0
-var cooldown
+var route = []
+var nav = Tile_nav.new()
 
 func _ready() -> void:
-	cooldown = period
+	nav.grid = grid_agent.grid
+	nav.allow_diagonal_steps = false
+	pass
 
-func _process(delta: float) -> void:
-	cooldown -= delta
+func next_step(prev_success):
+	if prev_success and route.size() > 0:
+		grid_agent.step_to(route.pop_back(), next_step)
 	
-	if cooldown <= 0:
-		cooldown = period
-		var random = range(4).pick_random()
-		
-		if random == 0:
-			grid_agent.step(Vector2i(0, -1))
-		elif random == 1:
-			grid_agent.step(Vector2i(1, 0))
-		elif random == 2:
-			grid_agent.step(Vector2i(0, 1))
-		elif random == 3:
-			grid_agent.step(Vector2i(-1, 0))
+func go_to(dest : Vector2i):
+	nav.scan_routes(grid_agent.get_grid_pos())
+	route = nav.get_route(dest)
+	next_step(true)
+	
+func stop():
+	route = []
