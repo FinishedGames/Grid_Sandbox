@@ -6,7 +6,7 @@ extends Node
 @export var cursor : Sprite2D
 @export var crosshair : Sprite2D
 
-@export var mob : Node
+@export var slaves : Array[Mob]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -18,7 +18,11 @@ func _ready() -> void:
 	input_mgr.left.connect(go_left)
 
 func _process(_delta: float) -> void:
-	var world_pos = grid_agent.grid.get_global_mouse_position()
+	var viewport = get_viewport()
+	var camera = viewport.get_camera_2d()
+	var mouse_pos = camera.to_global(camera.get_local_mouse_position())
+		
+	var world_pos = mouse_pos
 	var grid_pos = grid_agent.grid.get_pos(world_pos)
 	var player_pos = grid_agent.grid.get_pos(grid_agent.position)
 	
@@ -32,9 +36,11 @@ func _process(_delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		if cursor.visible:
-			mob.go_to(grid_agent.grid.get_pos(cursor.position))
+			for slave in slaves:
+				slave.go_to(grid_agent.grid.get_pos(cursor.position))
 		else:
-			mob.stop()
+			for slave in slaves:
+				slave.stop()
 			
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.

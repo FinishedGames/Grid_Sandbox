@@ -1,4 +1,5 @@
 extends Node
+class_name Mob
 
 @export var grid_agent : Grid_actor
 

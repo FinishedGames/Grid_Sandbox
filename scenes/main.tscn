@@ -1,7 +1,8 @@
-[gd_scene load_steps=13 format=4 uid="uid://c3icmne2pfxqb"]
+[gd_scene load_steps=23 format=4 uid="uid://c3icmne2pfxqb"]
 
 [ext_resource type="Script" path="res://scripts/Grid_manager.gd" id="1_6odlq"]
 [ext_resource type="Script" path="res://scripts/Input_manager.gd" id="1_da18s"]
+[ext_resource type="Script" path="res://scripts/Drag_n_drop_manager.gd" id="2_3k8cw"]
 [ext_resource type="TileSet" uid="uid://dvderq08rnag2" path="res://tileset.tres" id="2_e52n8"]
 [ext_resource type="Script" path="res://scripts/Grid_actor.gd" id="5_hp4cm"]
 [ext_resource type="Texture2D" uid="uid://d4nbo13x2rnnp" path="res://char.png" id="5_uj7hh"]
@@ -11,15 +12,36 @@
 [ext_resource type="Script" path="res://scripts/Mob.gd" id="8_ldem6"]
 [ext_resource type="Texture2D" uid="uid://d3oyk4exdb0hm" path="res://cursor.png" id="9_camyy"]
 [ext_resource type="Texture2D" uid="uid://g84oqx5fr1dy" path="res://crosshair.png" id="9_uycw2"]
+[ext_resource type="FontFile" uid="uid://cy6s01aycqgvo" path="res://fonts/C64_Pro_Mono.ttf" id="10_qeke0"]
+[ext_resource type="Texture2D" uid="uid://dhp4dhs8kamww" path="res://goo.png" id="12_p600u"]
+[ext_resource type="Texture2D" uid="uid://cx336gfhhwpsq" path="res://inventory.png" id="12_pi84y"]
+[ext_resource type="Script" path="res://scripts/Draggable.gd" id="13_hi2o0"]
+[ext_resource type="Script" path="res://scripts/Drop_zone.gd" id="15_3ab2a"]
+[ext_resource type="Script" path="res://scripts/Inventory_slot.gd" id="16_7il0x"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rt7p0"]
 shader = ExtResource("6_0dik2")
+
+[sub_resource type="LabelSettings" id="LabelSettings_cicxp"]
+line_spacing = 2.0
+font = ExtResource("10_qeke0")
+font_size = 8
+font_color = Color(0.133364, 0.125536, 0.203708, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gqhld"]
+size = Vector2(18, 18)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t8g6k"]
+size = Vector2(16, 16)
 
 [node name="Node2D" type="Node2D"]
 texture_filter = 1
 
 [node name="Input_manager" type="Node" parent="."]
 script = ExtResource("1_da18s")
+
+[node name="Drag_n_drop_manager" type="Node" parent="."]
+script = ExtResource("2_3k8cw")
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("1_6odlq")
@@ -35,24 +57,13 @@ texture_filter = 1
 tile_map_data = PackedByteArray("AAAOAAgAAAAAAAAAAAAJAAgAAAAAAAAAAAAKAAgAAAAAAAAAAAAKAAcAAAAAAAAAAAAOAAcAAAAAAAAAAAAPAAgAAAAAAAAAAAAIAAgAAAAAAAAAAAAIAAkAAAAAAAAAAAAIAAsAAAAAAAAAAAAIAAwAAAAAAAAAAAAJAAwAAAAAAAAAAAAKAAwAAAAAAAAAAAAKAA0AAAAAAAAAAAAOAA0AAAAAAAAAAAAOAAwAAAAAAAAAAAAPAAwAAAAAAAAAAAAQAAwAAAAAAAAAAAAQAAgAAAAAAAAAAAALAA0AAAABAAAAAAAMAA0AAAABAAAAAAANAA0AAAABAAAAAAAMAAcAAAABAAAAAAANAAcAAAABAAAAAAALAAcAAAABAAAAAAAQAAkAAAAAAAAAAAAQAAsAAAAAAAAAAAAVAAwAAAAHAAAAAAAVAA0AAAAHAAAAAAAWAA0AAAAHAAAAAAAWAAwAAAAHAAAAAAAXAA0AAAAHAAAAAAAXAAwAAAAHAAAAAAAWAA4AAAAHAAAAAAAXAA4AAAAHAAAAAAAYAAwAAAAHAAAAAAAYAAsAAAAHAAAAAAAXAAsAAAAHAAAAAAAZAAwAAAAHAAAAAAAZAAsAAAAHAAAAAAAYAA0AAAAHAAAAAAAYAAoAAAAHAAAAAAA=")
 tile_set = ExtResource("2_e52n8")
 
-[node name="Player_ctl" type="Node" parent="." node_paths=PackedStringArray("grid_agent", "input_mgr", "cursor", "crosshair", "mob")]
+[node name="Player_ctl" type="Node" parent="." node_paths=PackedStringArray("grid_agent", "input_mgr", "cursor", "crosshair", "slaves")]
 script = ExtResource("7_axkjx")
 grid_agent = NodePath("../Player")
 input_mgr = NodePath("../Input_manager")
 cursor = NodePath("../Cursor")
 crosshair = NodePath("../Crosshair")
-mob = NodePath("../Mob/Mob_ctl")
-
-[node name="Player" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
-texture_filter = 1
-position = Vector2(191, 202)
-texture = ExtResource("5_uj7hh")
-script = ExtResource("5_hp4cm")
-grid = NodePath("../Grid")
-speed = 50.0
-
-[node name="Camera2D" type="Camera2D" parent="Player"]
-zoom = Vector2(3, 3)
+slaves = [NodePath("../Mob/Mob_ctl"), NodePath("../Mob2/Mob_ctl"), NodePath("../Mob3/Mob_ctl")]
 
 [node name="Mob" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
 texture_filter = 1
@@ -66,6 +77,30 @@ speed = 50.0
 script = ExtResource("8_ldem6")
 grid_agent = NodePath("..")
 
+[node name="Mob2" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
+texture_filter = 1
+position = Vector2(273, 217)
+texture = ExtResource("7_umksh")
+script = ExtResource("5_hp4cm")
+grid = NodePath("../Grid")
+speed = 50.0
+
+[node name="Mob_ctl" type="Node" parent="Mob2" node_paths=PackedStringArray("grid_agent")]
+script = ExtResource("8_ldem6")
+grid_agent = NodePath("..")
+
+[node name="Mob3" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
+texture_filter = 1
+position = Vector2(290, 170)
+texture = ExtResource("7_umksh")
+script = ExtResource("5_hp4cm")
+grid = NodePath("../Grid")
+speed = 50.0
+
+[node name="Mob_ctl" type="Node" parent="Mob3" node_paths=PackedStringArray("grid_agent")]
+script = ExtResource("8_ldem6")
+grid_agent = NodePath("..")
+
 [node name="TextureRect" type="TextureRect" parent="."]
 material = SubResource("ShaderMaterial_rt7p0")
 offset_left = -187.0
@@ -73,6 +108,201 @@ offset_top = -25.0
 offset_right = -147.0
 offset_bottom = 15.0
 scale = Vector2(12.3478, 6.84695)
+
+[node name="Player" type="Sprite2D" parent="." node_paths=PackedStringArray("grid")]
+texture_filter = 1
+position = Vector2(191, 202)
+texture = ExtResource("5_uj7hh")
+script = ExtResource("5_hp4cm")
+grid = NodePath("../Grid")
+speed = 50.0
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(3, 3)
+
+[node name="Control" type="Control" parent="Player/Camera2D"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -191.0
+offset_top = -202.0
+offset_right = -151.0
+offset_bottom = -162.0
+mouse_filter = 1
+
+[node name="Label" type="Label" parent="Player/Camera2D/Control"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 219.0
+offset_right = 75.0
+offset_bottom = 242.0
+text = "capacity
+12"
+label_settings = SubResource("LabelSettings_cicxp")
+
+[node name="TextureRect" type="TextureRect" parent="Player/Camera2D/Control"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 238.0
+offset_right = 103.0
+offset_bottom = 302.0
+texture = ExtResource("12_pi84y")
+
+[node name="inventory" type="Node2D" parent="Player/Camera2D"]
+
+[node name="slot1" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-170, 48)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot1"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot1"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot2" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-151, 48)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot2"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot2"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot3" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-132, 48)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot3"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot3"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot4" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-113, 48)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot4"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot4"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot5" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-170, 67)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot5"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot5"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot6" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-151, 67)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot6"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot6"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot7" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-132, 67)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot7"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot7"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot8" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-113, 67)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot8"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot8"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot9" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-170, 86)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot9"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot9"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot10" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-151, 86)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot10"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot10"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot11" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-132, 86)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot11"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot11"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="slot12" type="Area2D" parent="Player/Camera2D/inventory" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-113, 86)
+script = ExtResource("15_3ab2a")
+dnd_manager = NodePath("../../../../Drag_n_drop_manager")
+
+[node name="Inventory_slot" type="Node2D" parent="Player/Camera2D/inventory/slot12"]
+script = ExtResource("16_7il0x")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/inventory/slot12"]
+position = Vector2(-1, 1)
+shape = SubResource("RectangleShape2D_gqhld")
+
+[node name="Area2D" type="Area2D" parent="Player/Camera2D" node_paths=PackedStringArray("dnd_manager")]
+position = Vector2(-171, 68)
+script = ExtResource("13_hi2o0")
+dnd_manager = NodePath("../../../Drag_n_drop_manager")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player/Camera2D/Area2D"]
+texture = ExtResource("12_p600u")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/Camera2D/Area2D"]
+shape = SubResource("RectangleShape2D_t8g6k")
 
 [node name="Cursor" type="Sprite2D" parent="."]
 position = Vector2(118, 151)

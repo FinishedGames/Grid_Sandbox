@@ -13,8 +13,8 @@ var _moving_from = null # the tile from which movement was started, used to inte
 
 var _is_moving = false
 var _halfway_done = false
-var _move_end_callback = null
 var _step_success = true
+signal _move_end
 
 @export var can_pass_objects = false
 @export var can_pass_solids = false
@@ -23,7 +23,8 @@ var tile_occupier = "moved to" # placeholder to pre-occupy tiles to which the ag
 
 func step(delta: Vector2i, callback = null):
 	if moving_to == null:
-		_move_end_callback = callback
+		if callback != null:
+			_move_end.connect(callback)
 		_moving_from = grid.get_pos(position)
 		moving_to = _moving_from + delta
 		
@@ -83,15 +84,14 @@ func _step_halfway():
 	grid.objects[moving_to.y][moving_to.x] = self # move self to next tile 
 		
 func _end_step():
-	var prev_callback = _move_end_callback
-	
+	var connections = _move_end.get_connections()
 	_move_progress = 0.0
 	moving_to = null
 	_moving_from = null
 	_is_moving = false
-	_move_end_callback = null
 	
-	if prev_callback:
-		prev_callback.call(_step_success)
-		
-	
+	for connection in connections:
+		var callable = connection["callable"]
+		_move_end.disconnect(callable)
+		callable.call(_step_success)
+	connections = _move_end.get_connections()	
