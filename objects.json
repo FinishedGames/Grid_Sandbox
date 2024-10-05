@@ -1,0 +1,25 @@
+{
+	"void": {
+		"solid": false,
+		"backgrounds": [[0, 4], [0, 5], [0, 6]]
+	},
+	"metal": {
+		"solid": true,
+		"backgrounds": [[0, 2]],
+		"foregrounds": [[0, 0]]	
+	},
+	"plastic": {
+		"solid": true,
+		"backgrounds": [[0, 3]],
+		"foregrounds": [[0, 1]]
+	},
+	"rock": {
+		"solid": true,
+		"backgrounds": [[0, 8]],
+		"foregrounds": [[0, 8]]
+	},
+	"truss": {
+		"solid": false,
+		
+	}
+}

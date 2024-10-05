@@ -1,22 +1,23 @@
 extends Node
 class_name Mob
 
-@export var grid_agent : Grid_actor
+@onready var grid_agent : Grid_actor = $".."
+@onready var nav : Grid_nav = $Nav
 
 var route = []
-var nav = Tile_nav.new()
 
 func _ready() -> void:
-	nav.grid = grid_agent.grid
-	nav.allow_diagonal_steps = false
 	pass
 
 func next_step(prev_success):
-	if prev_success and route.size() > 0:
-		grid_agent.step_to(route.pop_back(), next_step)
-	
+	if route.size() > 0:
+		if prev_success:
+			grid_agent.step_to(route.pop_back(), next_step)
+		else: # attempt to re-generate route
+			go_to(route.front())
+			
 func go_to(dest : Vector2i):
-	nav.scan_routes(grid_agent.get_grid_pos())
+	nav.scan_routes(grid_agent.get_grid_pos(), false, dest)
 	route = nav.get_route(dest)
 	next_step(true)
 	

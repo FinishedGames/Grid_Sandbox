@@ -1,17 +1,19 @@
-class_name Tile_nav
+extends Node
+class_name Grid_nav
 
-var misc = preload("res://scripts/Misc_functions.gd").new()
-
-var grid : Grid_manager
-var allow_diagonal_steps = true
+@onready var grid = %Grid
+@export var allow_diagonal_steps = true
 var map = null 
 
 const UNTRAVERSED = -1.0
 const OCCUPIED = -2.0
 const OBSTACLE = -3.0
 
-func scan_routes(from : Vector2i, ignore_objects = false) -> void:
+func scan_routes(from : Vector2i, ignore_objects = false, stop_when_reaches = null) -> void:
+	
 	map = grid.get_layout()
+	if stop_when_reaches != null and map[stop_when_reaches.y][stop_when_reaches.x] < -1.0:
+		return
 	map[from.y][from.x] = 0.0
 	var traversal_queue = [from]
 	
@@ -51,6 +53,8 @@ func scan_routes(from : Vector2i, ignore_objects = false) -> void:
 			   (prev_distance == UNTRAVERSED or prev_distance > current_distance + delta_distance)):
 				
 				map[(current + neighbor).y][(current + neighbor).x] = current_distance + delta_distance
+				if stop_when_reaches != null and stop_when_reaches == current:
+					return
 				traversal_queue.push_back(current + neighbor)
 	return
 	

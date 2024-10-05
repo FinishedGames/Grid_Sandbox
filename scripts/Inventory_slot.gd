@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 @onready var drop_zone : Drop_zone = $".."
 # Called when the node enters the scene tree for the first time.

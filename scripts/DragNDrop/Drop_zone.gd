@@ -1,4 +1,4 @@
-extends Area2D
+extends Control
 class_name Drop_zone
 
 @export var dnd_manager : Drag_n_drop_manager
@@ -10,8 +10,10 @@ func _ready() -> void:
 		
 func _mouse_enters():
 	dnd_manager.drop_zone = self
+	print("connected")
 
 func _mouse_exits():
 	if dnd_manager.drop_zone == self:
 		dnd_manager.drop_zone = null
+		print("disconnected")
 		

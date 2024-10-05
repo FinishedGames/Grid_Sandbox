@@ -1,8 +1,9 @@
 extends Node2D
 class_name Grid_actor
 
-@export var grid : Grid_manager
+@onready var grid : Grid_manager = %Grid
 @export var speed = 1.0 # tiles_per_second
+@export var tile_size = 16
 
 var _move_progress = 0.0
 var _move_duration = 1.0
@@ -19,7 +20,7 @@ signal _move_end
 @export var can_pass_objects = false
 @export var can_pass_solids = false
 
-var tile_occupier = "moved to" # placeholder to pre-occupy tiles to which the agent moves
+var placeholder = "moved to" # placeholder to pre-occupy tiles to which the agent moves
 
 func step(delta: Vector2i, callback = null):
 	if moving_to == null:
@@ -38,12 +39,13 @@ func _ready() -> void:
 	# attach self to nearest tile
 	var grid_pos = get_grid_pos()
 	position = grid.snap_to(grid_pos)
-	grid.objects[grid_pos.y][grid_pos.x] = self
+	grid.objects[grid_pos] = self
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if moving_to and not _is_moving:
 		# regenerate route if target tile is occupied.
+		var _debug = grid.is_occupied(get_grid_pos())
 		var next_is_occupied = grid.is_occupied(moving_to)
 		var next_is_solid = grid.is_solid(moving_to)
 
@@ -73,15 +75,15 @@ func _process(delta: float) -> void:
 	
 func _begin_step():
 	# pre-occupy tile with placeholder
-	grid.objects[moving_to.y][moving_to.x] = tile_occupier
+	grid.objects[moving_to] = placeholder
 	_moving_from = get_grid_pos()
 	_move_duration = (grid.snap_to(_moving_from) - 
-					  grid.snap_to(moving_to)).length() / speed
+					  grid.snap_to(moving_to)).length() / speed / tile_size
 	_is_moving = true
 	
 func _step_halfway():
-	grid.objects[_moving_from.y][_moving_from.x] = null # unoccupy previous tile
-	grid.objects[moving_to.y][moving_to.x] = self # move self to next tile 
+	grid.objects.erase(_moving_from)
+	grid.objects[moving_to] = self
 		
 func _end_step():
 	var connections = _move_end.get_connections()

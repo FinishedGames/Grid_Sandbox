@@ -15,9 +15,17 @@ texture = ExtResource("1_21mcp")
 5:0/0 = 0
 6:0/0 = 0
 7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+3:1/0 = 0
+2:1/0 = 0
 
 [resource]
-custom_data_layer_0/name = "Object"
+custom_data_layer_0/name = "object"
 custom_data_layer_0/type = 0
+custom_data_layer_1/name = "oxygen"
+custom_data_layer_1/type = 3
+custom_data_layer_2/name = "filth"
+custom_data_layer_2/type = 3
 sources/0 = SubResource("TileSetAtlasSource_ebkwf")
 pattern_0 = SubResource("TileMapPattern_30vji")
